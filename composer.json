@@ -1,0 +1,33 @@
+{
+    "name": "shimoning/bom",
+    "version": "0.1.0",
+    "description": "ユニコードの種類に合わせてBOMを取得するライブラリ",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Shimon Haga"
+        }
+    ],
+    "keywords": [
+        "bom",
+        "unicode",
+        "utf8",
+        "utf-8",
+        "utf16",
+        "utf-16"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Shimoning\\Bom\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require-dev": {
+        "phpunit/phpunit": "^7 | ^8 | ^9"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit --testsuite Latest --testdox",
+        "test:all": "vendor/bin/phpunit --testdox"
+    }
+}
