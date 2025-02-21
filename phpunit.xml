@@ -11,5 +11,8 @@
     <testsuite name="Latest">
       <file>tests/BomTest.php</file>
     </testsuite>
+    <testsuite name="BackwardCompatible">
+      <directory suffix="Test.php">tests/BC</directory>
+    </testsuite>
   </testsuites>
 </phpunit>

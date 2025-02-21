@@ -1,6 +1,6 @@
 {
     "name": "shimoning/bom",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "ユニコードの種類に合わせてBOMを取得するライブラリ",
     "type": "library",
     "license": "MIT",
@@ -28,6 +28,7 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit --testsuite Latest --testdox",
+        "test:bc": "vendor/bin/phpunit --testsuite BackwardCompatible --testdox",
         "test:all": "vendor/bin/phpunit --testdox"
     }
 }
