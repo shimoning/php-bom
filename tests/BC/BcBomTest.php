@@ -8,11 +8,30 @@ class BcBomTest extends TestCase
 {
     public function test_get()
     {
-        $this->assertEquals(\pack('C*', 0xEF, 0xBB, 0xBF), Bom::get(CharCode::UTF8));
-        $this->assertEquals(\pack('C*', 0xFE, 0xFF), Bom::get(CharCode::UTF16_BE));
-        $this->assertEquals(\pack('C*', 0xFF, 0xFE), Bom::get(CharCode::UTF16_LE));
-        $this->assertEquals(\pack('C*', 0x00, 0x00, 0xFE, 0xFF), Bom::get(CharCode::UTF32_BE));
-        $this->assertEquals(\pack('C*', 0xFF, 0xFE, 0x00, 0x00), Bom::get(CharCode::UTF32_LE));
+        // utf8
+        $bom = Bom::get(CharCode::UTF8);
+        $this->assertEquals(\pack('C*', 0xEF, 0xBB, 0xBF), $bom);
+        $this->assertEquals(3, \strlen($bom));
+
+        // utf16be
+        $bom = Bom::get(CharCode::UTF16_BE);
+        $this->assertEquals(\pack('C*', 0xFE, 0xFF), $bom);
+        $this->assertEquals(2, \strlen($bom));
+
+        // utf16le
+        $bom = Bom::get(CharCode::UTF16_LE);
+        $this->assertEquals(\pack('C*', 0xFF, 0xFE), $bom);
+        $this->assertEquals(2, \strlen($bom));
+
+        // utf32be
+        $bom = Bom::get(CharCode::UTF32_BE);
+        $this->assertEquals(\pack('C*', 0x00, 0x00, 0xFE, 0xFF), $bom);
+        $this->assertEquals(4, \strlen($bom));
+
+        // utf32le
+        $bom = Bom::get(CharCode::UTF32_LE);
+        $this->assertEquals(\pack('C*', 0xFF, 0xFE, 0x00, 0x00), $bom);
+        $this->assertEquals(4, \strlen($bom));
     }
 
     public function test_guess_utf8()
@@ -59,5 +78,33 @@ class BcBomTest extends TestCase
         $this->assertSame(CharCode::UTF32_LE, Bom::guess('UTF-32'));
         $this->assertSame(CharCode::UTF32_LE, Bom::guess('UTF32'));
         $this->assertSame(CharCode::UTF32_LE, Bom::guess('utf32'));
+    }
+
+    public function test_prepend()
+    {
+        // utf8
+        $prepended = Bom::prepend(CharCode::UTF8, 'abc');
+        $this->assertEquals(\pack('C*', 0xEF, 0xBB, 0xBF) . 'abc', $prepended);
+        $this->assertEquals(6, \strlen($prepended));
+
+        // others
+        $this->assertEquals(\pack('C*', 0xFE, 0xFF) . 'abc', Bom::prepend(CharCode::UTF16_BE, 'abc'));
+        $this->assertEquals(\pack('C*', 0xFF, 0xFE) . 'abc', Bom::prepend(CharCode::UTF16_LE, 'abc'));
+        $this->assertEquals(\pack('C*', 0x00, 0x00, 0xFE, 0xFF) . 'abc', Bom::prepend(CharCode::UTF32_BE, 'abc'));
+        $this->assertEquals(\pack('C*', 0xFF, 0xFE, 0x00, 0x00) . 'abc', Bom::prepend(CharCode::UTF32_BE, 'abc'));
+    }
+
+    public function test_strip()
+    {
+        // utf8
+        $stripped = Bom::strip(CharCode::UTF8, \pack('C*', 0xEF, 0xBB, 0xBF) . 'abc');
+        $this->assertEquals('abc', $stripped);
+        $this->assertEquals(3, \strlen($stripped));
+
+        // others
+        $this->assertEquals('abc', Bom::strip(CharCode::UTF16_BE, \pack('C*', 0xFE, 0xFF) . 'abc'));
+        $this->assertEquals('abc', Bom::strip(CharCode::UTF16_LE, \pack('C*', 0xFF, 0xFE) . 'abc'));
+        $this->assertEquals('abc', Bom::strip(CharCode::UTF32_BE, \pack('C*', 0x00, 0x00, 0xFE, 0xFF) . 'abc'));
+        $this->assertEquals('abc', Bom::strip(CharCode::UTF32_BE, \pack('C*', 0xFF, 0xFE, 0x00, 0x00) . 'abc'));
     }
 }

@@ -16,6 +16,11 @@ enum Bom: string
     case UTF32_LE = 'UTF-32_LE';
     // case UTF7 = 'UTF-7';
 
+    /**
+     * BOMのバイト列を取得する
+     *
+     * @return string
+     */
     public function get(): string
     {
         return match ($this) {
@@ -28,6 +33,30 @@ enum Bom: string
             // 最後の値は、後続文字のバイトの値によって異なり、0x38、0x39、0x2B、0x2Fのいずれか
             // self::UTF7 => \pack('C*', 0x2B, 0x2F, 0x76),
         };
+    }
+
+    /**
+     * BOMを文字列に付与する
+     *
+     * @param string $str
+     * @return string
+     */
+    public function prepend(string $str): string
+    {
+        return $this->get() . $str;
+    }
+
+    /**
+     * 文字列からBOMを取り除く
+     *
+     * @param string $str
+     * @return string
+     */
+    public function strip(string $str): string
+    {
+        return \str_starts_with($str, $this->get())
+            ? \substr($str, \strlen($this->get()))
+            : $str;
     }
 
     /**

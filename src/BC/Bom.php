@@ -6,6 +6,11 @@ namespace Shimoning\Bom\BC;
  */
 class Bom
 {
+    /**
+     * BOMのバイト列を取得する
+     *
+     * @return string
+     */
     static public function get(string $charCode): string
     {
         $charCode = self::guess($charCode);
@@ -23,7 +28,40 @@ class Bom
         return '';
     }
 
-    static public function guess(string $charCode): string
+    /**
+     * BOMを文字列に付与する
+     *
+     * @param string $charCode
+     * @param string $str
+     * @return string
+     */
+    static public function prepend(string $charCode, string $str): string
+    {
+        return self::get($charCode) . $str;
+    }
+
+    /**
+     * 文字列からBOMを取り除く
+     *
+     * @param string $charCode
+     * @param string $str
+     * @return string
+     */
+    static public function strip(string $charCode, string $str): string
+    {
+        $bom = self::get($charCode);
+        return \str_starts_with($str, $bom)
+            ? \substr($str, \strlen($bom))
+            : $str;
+    }
+
+    /**
+     * 文字コードを推測する
+     *
+     * @param string $charCode
+     * @return string|null
+     */
+    static public function guess(string $charCode)
     {
         $charCode = strtoupper($charCode);
         if ($charCode === 'UTF-8' || $charCode === 'UTF8') {
@@ -37,6 +75,6 @@ class Bom
         } elseif ($charCode === 'UTF-32LE' || $charCode === 'UTF32_LE' || $charCode === 'UTF32LE' || $charCode === 'UTF-32' || $charCode === 'UTF32') {
             return CharCode::UTF32_LE;
         }
-        return '';
+        return null;
     }
 }
